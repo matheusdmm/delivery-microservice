@@ -10,3 +10,9 @@ export interface Order {
   itens: string[];
   status: OrderStatus;
 }
+
+
+export interface OrderRequestBody {
+    cliente: string;
+    itens: string[];
+  }

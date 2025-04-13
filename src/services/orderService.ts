@@ -2,7 +2,7 @@ import { Order } from '../types/Order';
 import { v4 as uuid } from 'uuid';
 import * as repository from '../repositories/orderRepository';
 
-export const criarPedido = async (
+export const createOrder = async (
   cliente: string,
   itens: string[]
 ): Promise<Order> => {
@@ -13,7 +13,13 @@ export const criarPedido = async (
     status: 'pending',
   };
 
-  return repository.createOrder(novoPedido);
+  try {
+    await repository.createOrder(novoPedido);
+    return novoPedido;
+  } catch (err) {
+    console.error('Erro ao criar pedido:', err);
+    throw new Error('Erro ao criar pedido');
+  }
 };
 
 export const listarPedidos = async (): Promise<Order[]> => {

@@ -13,8 +13,10 @@ db.run(query, function (err) {
 });
 
 export const createOrder = (order: Order): Order => {
-  var query =
-    'INSERT INTO orders (id, cliente, itens, status) VALUES (?, ?, ?, ?)';
+  const query = `
+      INSERT INTO orders (id, cliente, itens, status)
+      VALUES (?, ?, ?, ?)
+    `;
 
   db.run(
     query,

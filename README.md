@@ -75,9 +75,18 @@ O banco é um arquivo `.db` salvo localmente (sem necessidade de instalação se
 new duckdb.Database('database.db');
 ```
 
+## 🛠️ 5. Configuração .env
+
+```javascript
+// É necessário configurar seu arquivo .env de acordo:
+PORT=3000
+DB_PATH=./db/delivery.duckdb
+ENVIRONMENT=DEV
+```
+
 ## ✅ To-do
 
 - [ ] Autenticação de usuários
 - [ ] Integração com sistema de entregadores
-- [ ] Testes automatizados
+- [x] Testes automatizados
 - [ ] Deploy na Vercel/Render
