@@ -39,7 +39,7 @@ npm run dev
 ```json
 {
   "id": "778f6921-8ddf-4365-be13-5c7785b56094",
-  "cliente": "João Silvaaa",
+  "cliente": "João Silva",
   "itens": ["Pizza", "Refrigerante"],
   "status": "pendente"
 }
@@ -49,7 +49,7 @@ npm run dev
 
 ```json
 {
-  "status": "em_preparo"
+  "status": "in progress"
 }
 ```
 

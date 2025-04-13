@@ -4,35 +4,39 @@ async function criarPedido() {
   const pedidos = [
     {
       cliente: 'Hermanoteu',
-      itens: ['Chocolate', 'Australopitecus'],
+      itens: ['Souvlaki de frango', 'Tzatziki', 'Pão Pita'],
     },
     {
       cliente: 'Zeus',
-      itens: ['Café', 'Pão de Queijo'],
+      itens: ['Moussaka', 'Feta', 'Olivas'],
     },
     {
       cliente: 'Atena',
-      itens: ['Laranja', 'Maçã', 'Pera'],
+      itens: ['Salgadinhos de feta', 'Salada Grega', 'Pão Pita'],
     },
     {
       cliente: 'Hades',
-      itens: ['Feijão', 'Arroz', 'Frango'],
+      itens: [
+        'Cozido de cordeiro',
+        'Feta grelhado',
+        'Batata assada com alecrim',
+      ],
     },
     {
       cliente: 'Apolo',
-      itens: ['Cerveja', 'Churrasco', 'Batata Frita'],
+      itens: ['Gyros', 'Tzatziki', 'Batatas fritas'],
     },
     {
       cliente: 'Hermes',
-      itens: ['Sushi', 'Tempura', 'Arroz Japonês'],
+      itens: ['Souvlaki de porco', 'Salada de pepino', 'Pão Pita'],
     },
     {
       cliente: 'Afrodite',
-      itens: ['Salada', 'Frango Grelhado', 'Arroz Integral'],
+      itens: ['Horiatiki (salada grega)', 'Frango grelhado', 'Arroz com ervas'],
     },
     {
       cliente: 'Poseidon',
-      itens: ['Peixe', 'Frutos do Mar', 'Batata Assada'],
+      itens: ['Frutos do mar grelhados', 'Moussaka', 'Tzatziki'],
     },
   ];
 

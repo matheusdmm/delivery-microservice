@@ -1,6 +1,5 @@
 import { Context } from 'koa';
 import * as service from '../services/orderService';
-import { IStatus } from '../interfaces/IStatus';
 import { Order } from '../types/Order';
 import { v4 as uuid } from 'uuid';
 
@@ -51,7 +50,7 @@ export const criar = async (ctx: Context) => {
 };
 
 export const atualizar = async (ctx: Context) => {
-  const { status } = ctx.request.body as IStatus;
+  const { status } = ctx.request.body as Order;
   const updated = await service.atualizarStatus(ctx.params.id, status);
   if (!updated) {
     ctx.status = 404;
