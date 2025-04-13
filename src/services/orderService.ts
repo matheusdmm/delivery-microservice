@@ -10,7 +10,7 @@ export const criarPedido = async (
     id: crypto.randomUUID(),
     cliente,
     itens,
-    status: 'pendente',
+    status: 'pending',
   };
 
   return repository.createOrder(novoPedido);
