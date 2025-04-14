@@ -1,10 +1,18 @@
-import app from './app';
-import dotenv from 'dotenv';
+import { ApolloServer } from 'apollo-server';
+import { typeDefs } from './graphql/schema';
+import { resolvers } from './graphql/resolvers/orders';
+import { initDB } from './database/duckdb';
+import 'dotenv/config';
 
-dotenv.config();
+initDB();
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 4000;
 
-app.listen(PORT, () => {
-  console.log(`🚀 Microserviço de pedidos rodando em http://localhost:${PORT}`);
+const server = new ApolloServer({
+  typeDefs,
+  resolvers,
+});
+
+server.listen({ port: PORT }).then(({ url }) => {
+  console.log(`🚀 Server rodando em ${url}`);
 });

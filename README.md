@@ -57,13 +57,13 @@ npm run dev
 
 ```
 ├── src/
-│   ├── controllers/       # Lógica dos endpoints
-│   ├── routes/            # Rotas do Koa
-│   ├── services/          # Regras de negócio
-│   ├── repositories/      # Acesso ao banco de dados (DuckDB)
-│   ├── types/             # Tipagens do TypeScript
-│   ├── db.ts              # Inicialização e conexão com o DuckDB
-│   └── index.ts           # Ponto de entrada da aplicação
+│   ├── db/
+│   │   └── duckdb.ts
+│   ├── graphql/
+│   │   ├── schema.ts
+│   │   └── resolvers/
+│   │       └── orders.ts
+│   ├── server.ts
 ```
 
 ## 🐤 4. Banco de dados (DuckDB)
