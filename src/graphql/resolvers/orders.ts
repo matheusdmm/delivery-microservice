@@ -1,27 +1,50 @@
-import { runQuery } from '../../database/duckdb';
+import { supabase } from '../../database/supabase';
 
-export const resolvers = {
+export const orderResolvers = {
   Query: {
     orders: async () => {
-      const result = await runQuery('SELECT * FROM orders;');
-      return result;
+      const { data, error } = await supabase.from('orders').select('*');
+      if (error) throw new Error(error.message);
+      return data;
     },
   },
+
   Mutation: {
-    createOrder: async (_: any, { customer, item }: any) => {
-      const createdAt = new Date().toISOString();
-      const status = 'PENDING';
-      await runQuery(`INSERT INTO orders VALUES (
-        (SELECT COALESCE(MAX(id), 0) + 1 FROM orders),
-        '${customer}',
-        '${item}',
-        '${status}',
-        '${createdAt}'
-      );`);
-      const [newOrder] = await runQuery(
-        `SELECT * FROM orders ORDER BY id DESC LIMIT 1;`
-      );
-      return newOrder;
+    createOrder: async (_, { item }, { req }) => {
+      // Recuperar token do header Authorization
+      const authHeader = req.headers.authorization;
+      const token = authHeader?.split(' ')[1];
+
+      if (!token) {
+        throw new Error('Token de autenticação não fornecido.');
+      }
+
+      // Recuperar usuário autenticado a partir do token
+      const {
+        data: { user },
+        error,
+      } = await supabase.auth.getUser(token);
+
+      if (error || !user) {
+        throw new Error('Usuário não autenticado.');
+      }
+
+      // Criar a ordem com o ID ou email do usuário autenticado
+      const { data, error: insertError } = await supabase
+        .from('orders')
+        .insert({
+          customer: user.email, // ou user.id, se preferir
+          item,
+          status: 'pendente',
+        })
+        .select()
+        .single();
+
+      if (insertError) {
+        throw new Error(`Erro ao criar pedido: ${insertError.message}`);
+      }
+
+      return data;
     },
   },
 };

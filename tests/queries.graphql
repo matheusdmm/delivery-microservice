@@ -1,0 +1,23 @@
+mutation CreateUser {
+  createUser(email: "john@doe.com", password: "minhasenha")
+}
+
+mutation CreateOrder {
+  createOrder(customer: "John Doe", item: "Pizza") {
+    id
+    customer
+    item
+    status
+    created_at
+  }
+}
+
+query GetOrders {
+  orders {
+    id
+    customer
+    item
+    status
+    created_at
+  }
+}

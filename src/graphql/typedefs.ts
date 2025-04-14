@@ -9,18 +9,13 @@ export const typeDefs = gql`
     created_at: String!
   }
 
-  type User {
-    id: ID!
-    username: String!
-  }
-
   type Query {
     orders: [Order!]!
-    getUser(id: ID!): User
   }
 
   type Mutation {
-    createOrder(customer: String!, item: String!): Order!
-    createUser(username: String!, password: String!): User!
+    createOrder(item: String!): Order!
+    createUser(email: String!, password: String!): String!
+    loginUser(email: String!, password: String!): String!
   }
 `;
