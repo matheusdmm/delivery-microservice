@@ -23,8 +23,16 @@ export const runQuery = async (query: string): Promise<duckdb.RowData[]> => {
 export const initDB = () => {
   if (environment === 'DEV' || 'TEST') {
     console.info('Running DEV/TEST');
-    //db.run(`DROP TABLE IF EXISTS orders;`);
+    //db.run(`DROP TABLE IF EXISTS orders users;`);
   }
+
+  db.run(`
+    CREATE TABLE IF NOT EXISTS users (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    username TEXT UNIQUE NOT NULL,
+    password TEXT NOT NULL
+    );
+  `);
 
   db.run(`CREATE TABLE orders (
       id INTEGER PRIMARY KEY,
@@ -34,3 +42,5 @@ export const initDB = () => {
       created_at TIMESTAMP
     );`);
 };
+
+export { db };

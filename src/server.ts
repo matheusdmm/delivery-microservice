@@ -1,18 +1,15 @@
-import { ApolloServer } from 'apollo-server';
-import { typeDefs } from './graphql/schema';
-import { resolvers } from './graphql/resolvers/orders';
-import { initDB } from './database/duckdb';
 import 'dotenv/config';
-
-initDB();
-
-const PORT = process.env.PORT || 4000;
+import { ApolloServer } from 'apollo-server';
+import { typeDefs } from './graphql/typedefs';
+import { userResolvers } from './graphql/resolvers/users';
+import { orderResolvers } from './graphql/resolvers/orders';
 
 const server = new ApolloServer({
   typeDefs,
-  resolvers,
+  resolvers: [userResolvers, orderResolvers],
+  context: ({ req }) => ({ req }),
 });
 
-server.listen({ port: PORT }).then(({ url }) => {
-  console.log(`🚀 Server rodando em ${url}`);
+server.listen({ port: process.env.PORT || 4000 }).then(({ url }) => {
+  console.log(`Server ready at ${url}`);
 });
