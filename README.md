@@ -1,11 +1,12 @@
 # 🛵 Microserviço de Pedidos - Delivery
 
-Este é um microserviço simples para gerenciamento de pedidos de um sistema de delivery. Ele foi construído com:
+Este é um microserviço para gerenciamento de pedidos de um sistema de delivery. Ele foi construído com as seguintes tecnologias:
 
 - [Node.js](https://nodejs.org/)
-- [Koa](https://koajs.com/)
+- [Apollo Server](https://www.apollographql.com/docs/apollo-server/) (para GraphQL)
 - [TypeScript](https://www.typescriptlang.org/)
-- [DuckDB](https://duckdb.org/) (como banco de dados embutido)
+- [DuckDB](https://duckdb.org/) (banco de dados embutido)
+- [Vitest](https://vitest.dev/) (para testes automatizados)
 
 ---
 
@@ -17,41 +18,95 @@ Este é um microserviço simples para gerenciamento de pedidos de um sistema de 
 npm install
 ```
 
-### 2. Rode
+### 2. Configure o arquivo `.env`
+
+Crie um arquivo `.env` na raiz do projeto com as configurações necessárias:
+
+```env
+PORT=4000
+DB_PATH=./db/delivery.duckdb
+ENVIRONMENT=DEV
+```
+
+### 3. Rode o servidor
 
 ```bash
 npm run dev
 ```
 
-## 👻 2. Endpoints
+Isso vai iniciar o servidor GraphQL na porta configurada no `.env` (por padrão, `4000`).
 
-### POST /pedidos
+### 4. Acesse o Playground GraphQL
 
-```json
-{
-  "cliente": "João da Silva",
-  "itens": ["Pizza Calabresa", "Coca-Cola 2L"]
+Depois de rodar o servidor, acesse o [GraphQL Playground](http://localhost:4000/graphql) para testar as queries e mutations.
+
+---
+
+## 👻 2. Endpoints GraphQL
+
+### **Mutation**: Criar Pedido
+
+```graphql
+mutation {
+  createOrder(customer: "João da Silva", item: "Pizza Calabresa") {
+    id
+    customer
+    item
+    status
+    created_at
+  }
 }
 ```
 
-### GET /pedidos || /pedidos/:id
+- **Resposta**:
 
 ```json
 {
-  "id": "778f6921-8ddf-4365-be13-5c7785b56094",
-  "cliente": "João Silva",
-  "itens": ["Pizza", "Refrigerante"],
-  "status": "pendente"
+  "data": {
+    "createOrder": {
+      "id": 1,
+      "customer": "João da Silva",
+      "item": "Pizza Calabresa",
+      "status": "PENDING",
+      "created_at": "2025-04-14T00:00:00.000Z"
+    }
+  }
 }
 ```
 
-### PATCH /pedidos/:id/status
+### **Query**: Listar Pedidos
+
+```graphql
+query {
+  orders {
+    id
+    customer
+    item
+    status
+    created_at
+  }
+}
+```
+
+- **Resposta**:
 
 ```json
 {
-  "status": "in progress"
+  "data": {
+    "orders": [
+      {
+        "id": 1,
+        "customer": "João da Silva",
+        "item": "Pizza Calabresa",
+        "status": "PENDING",
+        "created_at": "2025-04-14T00:00:00.000Z"
+      }
+    ]
+  }
 }
 ```
+
+---
 
 ## 🧠 3. Estrutura do projeto
 
@@ -64,25 +119,57 @@ npm run dev
 │   │   └── resolvers/
 │   │       └── orders.ts
 │   ├── server.ts
+│   └── config/
+│       └── env.ts
+├── tests/
+│   └── order.test.ts
+├── .env
+├── package.json
+├── tsconfig.json
+└── README.md
 ```
+
+---
 
 ## 🐤 4. Banco de dados (DuckDB)
 
-O banco é um arquivo `.db` salvo localmente (sem necessidade de instalação separada de servidor):
+O banco de dados é um arquivo `.db` salvo localmente, sem a necessidade de instalação separada de servidor. A conexão é feita através de:
 
 ```ts
-// src/db.ts
-new duckdb.Database('database.db');
+import duckdb from 'duckdb';
+
+const db = new duckdb.Database('database.db');
 ```
 
-## 🛠️ 5. Configuração .env
+---
 
-```javascript
-// É necessário configurar seu arquivo .env de acordo:
-PORT=3000
+## 🧪 5. Testes Automatizados
+
+O projeto utiliza [Vitest](https://vitest.dev/) para testes automatizados. Os testes estão localizados na pasta `tests/` e podem ser executados com:
+
+```bash
+npm test
+```
+
+Para rodar a interface de testes, utilize:
+
+```bash
+npm run test:ui
+```
+
+---
+
+## 🛠️ 6. Configuração .env
+
+O arquivo `.env` deve ser configurado para definir as variáveis de ambiente:
+
+```env
+PORT=4000
 DB_PATH=./db/delivery.duckdb
 ENVIRONMENT=DEV
 ```
+
+---
 
 ## ✅ To-do
 
