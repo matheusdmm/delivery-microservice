@@ -1,12 +1,15 @@
 # 🛵 Microserviço de Pedidos - Delivery
 
-Este é um microserviço para gerenciamento de pedidos de um sistema de delivery. Ele foi construído com as seguintes tecnologias:
+Microserviço para gerenciamento de pedidos de delivery.
 
 - [Node.js](https://nodejs.org/)
 - [Apollo Server](https://www.apollographql.com/docs/apollo-server/) (para GraphQL)
 - [TypeScript](https://www.typescriptlang.org/)
-- [DuckDB](https://duckdb.org/) (banco de dados embutido)
-- [Vitest](https://vitest.dev/) (para testes automatizados)
+- [Supabase](https://supabase.com/) (banco de dados e autenticação)
+- [React](https://react.dev/) no front-end
+- [Tailwind CSS](https://tailwindcss.com/) para estilização
+- [shadcn/ui](https://ui.shadcn.dev/) para componentes de interface
+- [Vitest](https://vitest.dev/) para testes automatizados
 
 ---
 
@@ -20,160 +23,146 @@ npm install
 
 ### 2. Configure o arquivo `.env`
 
-Crie um arquivo `.env` na raiz do projeto com as configurações necessárias:
+Crie um arquivo `.env` na raiz do projeto backend com as seguintes variáveis:
 
 ```env
 PORT=4000
-DB_PATH=./db/delivery.duckdb
+SUPABASE_URL=https://<seu-supabase-url>.supabase.co
+SUPABASE_SERVICE_ROLE_KEY=<sua-service-role-key>
 ENVIRONMENT=DEV
 ```
 
-### 3. Rode o servidor
+**Obs**: Você precisa criar o projeto no Supabase e configurar a tabela `orders`.
+
+Tabela `orders`:
+
+```sql
+create table orders (
+  id uuid primary key default uuid_generate_v4(),
+  customer text not null,
+  items jsonb not null,
+  status text default 'pendente',
+  created_at timestamp with time zone default now()
+);
+```
+
+---
+
+### 3. Rode o servidor backend
 
 ```bash
 npm run dev
 ```
 
-Isso vai iniciar o servidor GraphQL na porta configurada no `.env` (por padrão, `4000`).
-
-### 4. Acesse o Playground GraphQL
-
-Depois de rodar o servidor, acesse o [GraphQL Playground](http://localhost:4000/graphql) para testar as queries e mutations.
+O servidor GraphQL ficará acessível em [http://localhost:4000/graphql](http://localhost:4000/graphql).
 
 ---
 
-## 👻 2. Endpoints GraphQL
+### 4. Rode o projeto front-end (React)
+
+Entre na pasta do front-end e execute:
+
+```bash
+npm run dev
+```
+
+---
+
+## 👻 Endpoints GraphQL
 
 ### **Mutation**: Criar Pedido
 
 ```graphql
 mutation {
-  createOrder(customer: "João da Silva", item: "Pizza Calabresa") {
-    id
-    customer
-    item
-    status
-    created_at
-  }
-}
-```
-
-- **Resposta**:
-
-```json
-{
-  "data": {
-    "createOrder": {
-      "id": 1,
-      "customer": "João da Silva",
-      "item": "Pizza Calabresa",
-      "status": "PENDING",
-      "created_at": "2025-04-14T00:00:00.000Z"
+  createOrder(
+    input: {
+      customer: "test@test.com"
+      items: [
+        {
+          name: "Pizza"
+          quantity: 1
+          size: "Grande"
+          flavors: ["Calabresa", "Chocolate"]
+        }
+      ]
     }
-  }
-}
-```
-
-### **Query**: Listar Pedidos
-
-```graphql
-query {
-  orders {
+  ) {
     id
     customer
-    item
     status
     created_at
-  }
-}
-```
-
-- **Resposta**:
-
-```json
-{
-  "data": {
-    "orders": [
-      {
-        "id": 1,
-        "customer": "João da Silva",
-        "item": "Pizza Calabresa",
-        "status": "PENDING",
-        "created_at": "2025-04-14T00:00:00.000Z"
-      }
-    ]
   }
 }
 ```
 
 ---
 
-## 🧠 3. Estrutura do projeto
+### **Query**: Listar Pedidos do Usuário
+
+```graphql
+query {
+  myOrders {
+    id
+    customer
+    items {
+      name
+      quantity
+      size
+      flavors
+    }
+    status
+    created_at
+  }
+}
+```
+
+Essa query retorna **apenas** os pedidos do usuário autenticado (baseado no token JWT do Supabase).
+
+---
+
+## 🧠 Estrutura do Projeto
 
 ```
-├── src/
-│   ├── db/
-│   │   └── duckdb.ts
-│   ├── graphql/
-│   │   ├── schema.ts
-│   │   └── resolvers/
-│   │       └── orders.ts
-│   ├── server.ts
-│   └── config/
-│       └── env.ts
-├── tests/
-│   └── order.test.ts
-├── .env
-├── package.json
-├── tsconfig.json
+├── backend/
+│   ├── src/
+│   │   ├── graphql/
+│   │   │   ├── resolvers/
+│   │   │   │   └── orders.ts
+│   │   │   │   └── users.ts
+│   │   │   └── typedefs.ts
+│   │   ├── database/
+│   │   │   └── supabase.ts
+│   │   ├── types/
+│   │   │   └── types.ts
+│   │   └── server.ts
+│   ├── tests/
+│   │   ├── createUsers.test.ts
+│   │   ├── order.test.ts
+│   │   └── queries.graphql
+│   ├── .env
+│   └── package.json
 └── README.md
 ```
 
 ---
 
-## 🐤 4. Banco de dados (DuckDB)
+## 🧪 Testes Automatizados
 
-O banco de dados é um arquivo `.db` salvo localmente, sem a necessidade de instalação separada de servidor. A conexão é feita através de:
+O projeto backend utiliza [Vitest](https://vitest.dev/) para testes automatizados.
 
-```ts
-import duckdb from 'duckdb';
-
-const db = new duckdb.Database('database.db');
-```
-
----
-
-## 🧪 5. Testes Automatizados
-
-O projeto utiliza [Vitest](https://vitest.dev/) para testes automatizados. Os testes estão localizados na pasta `tests/` e podem ser executados com:
+Para rodar os testes:
 
 ```bash
-npm test
-```
-
-Para rodar a interface de testes, utilize:
-
-```bash
-npm run test:ui
-```
-
----
-
-## 🛠️ 6. Configuração .env
-
-O arquivo `.env` deve ser configurado para definir as variáveis de ambiente:
-
-```env
-PORT=4000
-DB_PATH=./db/delivery.duckdb
-ENVIRONMENT=DEV
+npm run test
 ```
 
 ---
 
 ## ✅ To-do
 
-- [ ] Autenticação de usuários
-- [ ] Integração com sistema de entregadores
-- [x] Testes automatizados
-- [ ] Deploy na Vercel/Render
+- [x] Autenticação de usuários com Supabase
+- [x] Criação de pedidos
+- [x] Listagem de pedidos do usuário autenticado
+- [ ] Filtrar pedidos por status
+- [ ] Paginação e ordenação de pedidos
+- [ ] Integração com entregadores

@@ -4,19 +4,11 @@ import { OrderItem } from '../../types/types';
 
 export const orderResolvers = {
   Query: {
-    orders: async () => {
-      const { data, error } = await supabase.from('orders').select('*');
-      if (error) throw new Error(error.message);
-      return data;
-    },
-
-    myOrders: async (_: unknown, __: unknown, context: { req: Request }) => {
+    orders: async (_: unknown, __: unknown, context: { req: Request }) => {
       const authHeader = context.req.headers.authorization;
       const token = authHeader?.split(' ')[1];
 
-      if (!token) {
-        throw new Error('Token de autenticação não fornecido.');
-      }
+      if (!token) throw new Error('Token de autenticação não fornecido.');
 
       const {
         data: { user },
@@ -32,10 +24,7 @@ export const orderResolvers = {
         .select('*')
         .eq('customer', user.email);
 
-      if (fetchError) {
-        throw new Error(`Erro ao buscar pedidos: ${fetchError.message}`);
-      }
-
+      if (fetchError) throw new Error(fetchError.message);
       return data;
     },
   },
@@ -43,7 +32,17 @@ export const orderResolvers = {
   Mutation: {
     createOrder: async (
       _: unknown,
-      { input }: { input: { customer: string; items: OrderItem[] } },
+      {
+        input,
+      }: {
+        input: {
+          customer: string;
+          items: OrderItem[];
+          address: string;
+          paymentMethod: string;
+          estimatedTime: string;
+        };
+      },
       context: { req: Request }
     ) => {
       const authHeader = context.req.headers.authorization;
@@ -62,13 +61,16 @@ export const orderResolvers = {
         throw new Error('Usuário não autenticado.');
       }
 
-      const { customer, items } = input;
+      const { customer, items, address, paymentMethod, estimatedTime } = input;
 
       const { data, error: insertError } = await supabase
         .from('orders')
         .insert({
           customer: customer || user.email,
           items,
+          address,
+          payment_method: paymentMethod,
+          estimated_time: estimatedTime,
           status: 'pendente',
         })
         .select()

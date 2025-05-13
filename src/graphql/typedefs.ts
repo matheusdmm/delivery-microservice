@@ -15,6 +15,9 @@ export const typeDefs = gql`
   input CreateOrderInput {
     customer: String!
     items: [OrderItemInput!]!
+    address: String!
+    paymentMethod: String!
+    estimatedTime: String!
   }
 
   input OrderItemInput {
@@ -28,6 +31,9 @@ export const typeDefs = gql`
     id: ID!
     customer: String!
     items: [OrderItem!]!
+    address: String!
+    paymentMethod: String!
+    estimatedTime: String!
     status: String!
   }
 
